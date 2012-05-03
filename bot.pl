@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # perl bot.pl datafile
+# datafile should be tab-separated mbid-url pairs
 
 use CoverArtBot;
 use LWP::Simple;
