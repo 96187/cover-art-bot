@@ -5,14 +5,15 @@ use utf8;
 use WWW::Mechanize;
 
 sub new {
-	my ($package) = @_;
+	my ($package, $args) = @_;
 	my %hash;
 	%hash = (
 		FORM => {},
 		'server' => 'musicbrainz.org',
-		'username' => '',
-		'password' => '',
+		'username' => $args->{username},
+		'password' => $args->{password},
 		'useragent' => 'cover art bot/0.1',
+		'note' => $args->{note},
 		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1)
 	);
 	bless \%hash => $package;
@@ -105,8 +106,11 @@ sub add_cover_art {
 	# submit edit	
 	$mech->form_id("add-cover-art");
 	$mech->select("add-cover-art.type_id", "1");
-	$mech->untick("add-cover-art.as_auto_editor", "1");
-	$mech->field("add-cover-art.edit_note", "from existing cover art relationship");
+	# if user is an autoeditor, do not submit this as an autoedit
+	if ($mech->find_all_inputs(type => 'checkbox', name=>'as_auto_editor')) {
+		$mech->untick("add-cover-art.as_auto_editor", "1");
+	}
+	$mech->field("add-cover-art.edit_note", $self->{'note'});
 	$mech->submit();
 
 	print $mech->uri, "\n";
