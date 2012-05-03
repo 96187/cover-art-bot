@@ -24,7 +24,7 @@ while (<FILE>) {
 close FILE;
 
 system "stty -echo";
-print "Password:";
+print "Password for $username:";
 my $password = <>;
 system "stty echo";
 print "\n";
