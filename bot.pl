@@ -1,23 +1,28 @@
 #!/usr/bin/perl
-# perl bot.pl datafile username [note [number [tmpdir]]]
+# perl bot.pl [options] datafile username
 # 'datafile' should be tab-separated mbid-url pairs
 # 'username' is the MusicBrainz username to use (will prompt for password)
-# 'note' is an edit note to use (default 'from existing cover art relationship')
-# 'number' is how many (max) pieces to upload in a given run (default: 2)
-# 'tmpdir' is a temporary directory (default: "/tmp/")
+# Options:
+# -n --note: edit note to use (default 'from existing cover art relationship')
+# -m --max: how many (max) pieces to upload in a given run (default: 2)
+# -t --tmpdir: a temporary directory (default: "/tmp/")
+# -p --password: password (if not provided, will prompt)
 
 use CoverArtBot;
 use LWP::Simple;
+use Getopt::Long;
 
-my $file = shift @ARGV or die "You must provide a data file";
-my $username = shift @ARGV or die "You must provide a username";
-my $note = shift @ARGV || "from existing cover art relationship";
-my $max = shift @ARGV || 2;
-my $tmpdir = shift @ARGV || "/tmp/";
+my $note = "from existing cover art relationship";
+my $max = 2;
+my $tmpdir = "/tmp/";
+my $password = '';
+GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password);
 
+my $file = shift @ARGV or die "Must provide a filename";
+my $username = shift @ARGV or die "Must provide a username";
 my %mbids = ();
 
-open FILE, $file or die "Couldn't open the data file";
+open FILE, $file or die "Couldn't open the data file ($file)";
 while (<FILE>) {
 	chomp;
 	my ($mbid, $url) = split /\t/;
@@ -25,11 +30,13 @@ while (<FILE>) {
 }
 close FILE;
 
-system "stty -echo";
-print "Password for $username:";
-my $password = <>;
-system "stty echo";
-print "\n";
+if (!$password) {
+	system "stty -echo";
+	print "Password for $username:";
+	$password = <>;
+	system "stty echo";
+	print "\n";
+}
 
 my $bot = CoverArtBot->new({username => $username, password => $password, note => $note});
 
