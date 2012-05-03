@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-# perl bot.pl datafile [number [tmpdir]]
+# perl bot.pl datafile username [number [tmpdir]]
 # 'datafile' should be tab-separated mbid-url pairs
+# 'username' is the MusicBrainz username to use (will prompt for password)
 # 'number' is how many (max) pieces to upload in a given run (default: 2)
 # 'tmpdir' is a temporary directory (default: "/tmp/")
 
@@ -8,6 +9,7 @@ use CoverArtBot;
 use LWP::Simple;
 
 my $file = shift @ARGV or die "You must provide a data file";
+my $username = shift @ARGV or die "You must provide a username";
 my $max = shift @ARGV || 2;
 my $tmpdir = shift @ARGV || "/tmp/";
 
@@ -21,7 +23,13 @@ while (<FILE>) {
 }
 close FILE;
 
-my $bot = CoverArtBot->new('username', 'password');
+system "stty -echo";
+print "Password:";
+my $password = <>;
+system "stty echo";
+print "\n";
+
+my $bot = CoverArtBot->new($username, $password);
 
 for my $mbid (keys %mbids) {
 	last unless $max > 0;
