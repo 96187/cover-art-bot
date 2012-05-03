@@ -5,13 +5,13 @@ use utf8;
 use WWW::Mechanize;
 
 sub new {
-	my ($package) = @_;
+	my ($package, $username, $password) = @_;
 	my %hash;
 	%hash = (
 		FORM => {},
 		'server' => 'musicbrainz.org',
-		'username' => '',
-		'password' => '',
+		'username' => $username,
+		'password' => $password,
 		'useragent' => 'cover art bot/0.1',
 		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1)
 	);

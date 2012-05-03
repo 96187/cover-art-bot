@@ -21,7 +21,7 @@ while (<FILE>) {
 }
 close FILE;
 
-my $bot = new CoverArtBot;
+my $bot = CoverArtBot->new('username', 'password');
 
 for my $mbid (keys %mbids) {
 	last unless $max > 0;
