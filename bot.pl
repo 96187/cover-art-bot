@@ -7,13 +7,13 @@
 use CoverArtBot;
 use LWP::Simple;
 
-my $file = shift @ARGV or die;
+my $file = shift @ARGV or die "You must provide a data file";
 my $max = shift @ARGV || 2;
 my $tmpdir = shift @ARGV || "/tmp/";
 
 my %mbids = ();
 
-open FILE, $file or die;
+open FILE, $file or die "Couldn't open the data file";
 while (<FILE>) {
 	chomp;
 	my ($mbid, $url) = split /\t/;
