@@ -1,15 +1,18 @@
 #!/usr/bin/perl
-# perl bot.pl datafile
-# datafile should be tab-separated mbid-url pairs
+# perl bot.pl datafile [number [tmpdir]]
+# 'datafile' should be tab-separated mbid-url pairs
+# 'number' is how many (max) pieces to upload in a given run (default: 2)
+# 'tmpdir' is a temporary directory (default: "/tmp/")
 
 use CoverArtBot;
 use LWP::Simple;
 
-my $max = 2;
-my $tmpdir = "/tmp/";
+my $file = shift @ARGV or die;
+my $max = shift @ARGV || 2;
+my $tmpdir = shift @ARGV || "/tmp/";
 
 my %mbids = ();
-my $file = shift @ARGV or die;
+
 open FILE, $file or die;
 while (<FILE>) {
 	chomp;
