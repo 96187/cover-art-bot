@@ -107,7 +107,7 @@ sub add_cover_art {
 	$mech->form_id("add-cover-art");
 	$mech->select("add-cover-art.type_id", "1");
 	# if user is an autoeditor, do not submit this as an autoedit
-	if ($mech->find_all_inputs(type => 'checkbox', name=>'as_auto_editor')) {
+	if ($mech->find_all_inputs(type => 'checkbox', name=>'add-cover-art.as_auto_editor')) {
 		$mech->untick("add-cover-art.as_auto_editor", "1");
 	}
 	$mech->field("add-cover-art.edit_note", $self->{'note'});
