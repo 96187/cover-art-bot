@@ -14,18 +14,21 @@ sub new {
 		'password' => $args->{password},
 		'useragent' => 'cover art bot/0.1',
 		'note' => $args->{note},
+		'remove_note' => $args->{remove_note},
 		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1)
 	);
 	bless \%hash => $package;
 }
 
 sub run {
-	my ($self, $mbid, $filename) = @_;
+	my ($self, $mbid, $filename, $rel) = @_;
 
 	$self->{'mbid'} = $mbid;
 	$self->{'filename'} = $filename;
+	$self->{'rel'} = $rel;
 	print $self->{'mbid'},"\n";
 	print $self->{'filename'},"\n";
+	print $self->{'rel'},"\n";
 
 	if ($self->cover_exists) {
 		print "Skipping $mbid: Already has cover art.\n";
@@ -34,6 +37,12 @@ sub run {
 
 	if (!$self->add_cover_art) {
 		print "Couldn't add cover art.\n";
+		return 0;
+	}
+
+	if ($self->{'rel'} && !$self->remove_relationship()) {
+		print $self->{'rel'},"\n";
+		print "Couldn't remove relationship.\n";
 		return 0;
 	}
 
@@ -58,6 +67,18 @@ sub load_url {
 	sleep 1;
 	if ($r->is_success) {
 		return $r->decoded_content;
+	}
+	return undef;
+}
+
+sub remove_relationship {
+	print "Removing relationship ".$self->{'rel'}."\n";
+	my ($self) = @_;
+	my $mech = $self->{'mech'};
+	my $url = "http://".$self->{'server'}."/edit/relationship/delete?returnto=&type1=url&type0=release&id=".$self->{'rel'};
+	my $r = $mech->post($url, {'confirm.edit_note' => $self->{'remove_note'}});
+	if ($r->is_success) {
+		return 1;
 	}
 	return undef;
 }
