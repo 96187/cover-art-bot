@@ -21,14 +21,19 @@ sub new {
 }
 
 sub run {
-	my ($self, $mbid, $filename, $rel) = @_;
+	my ($self, $l, $filename) = @_;
 
-	$self->{'mbid'} = $mbid;
+	$self->{'mbid'} = $l->{'mbid'};
 	$self->{'filename'} = $filename;
-	$self->{'rel'} = $rel;
+	$self->{'rel'} = $l->{'rel'};
+	$self->{'types'} = $l->{'types'} || "Front";
+	$self->{'comment'} = $l->{'comment'};
+
 	print $self->{'mbid'},"\n";
 	print $self->{'filename'},"\n";
 	print $self->{'rel'},"\n";
+	print $self->{'types'},"\n";
+	print $self->{'comment'},"\n";
 
 	if ($self->cover_exists) {
 		print "Skipping $mbid: Already has cover art.\n";
@@ -115,18 +120,33 @@ sub add_cover_art {
 	$mech2->get( $iframe->url() );
 
 	# upload image
-	$mech2->field("file", $self->{'filename'});
-	$mech2->submit();
-	if ($mech2->content !~ /parent.document.getElementById/) {
-		print "Error uploading image.\n";
+	if (-e $self->{'filename'}) {
+		$mech2->field("file", $self->{'filename'});
+		$mech2->submit();
+		if ($mech2->content !~ /parent.document.getElementById/) {
+			print "Error uploading image.\n";
+			return 0;
+		}
+	} else {
+		print "Could not find ".$self->{'filename'}."\n";
 		return 0;
 	}
 
-	sleep 2;
+	sleep 3;
 
 	# submit edit	
 	$mech->form_id("add-cover-art");
-	$mech->select("add-cover-art.type_id", "1");
+	my %types = ( "Front" => 1, "Back" => 2, "Booklet" => 3, "Medium" => 4, "Obi" => 5, "Spine" => 6, "Track" => 7, "Other" => 8 );
+	print $self->{'types'},"\n";
+	if ($self->{'types'} ne "None") {
+		my @types = map { $types{$_} } split /,/, $self->{'types'};
+		print join ",", @types; print "\n";
+		$mech->select("add-cover-art.type_id", \@types);
+	}
+	if ($self->{'comment'}) {
+		$mech->field("add-cover-art.comment", $self->{'comment'});
+		print "Setting comment ".$self->{'comment'}.".\n";
+	}
 	# if user is an autoeditor, do not submit this as an autoedit
 	if ($mech->find_all_inputs(type => 'checkbox', name=>'add-cover-art.as_auto_editor')) {
 		$mech->untick("add-cover-art.as_auto_editor", "1");

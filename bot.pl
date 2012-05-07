@@ -8,6 +8,7 @@
 # -t --tmpdir: a temporary directory (default: "/tmp/")
 # -p --password: password (if not provided, will prompt)
 # -r --remove-note: edit note to use when removing a relationship (default 'cover added to cover art archive')
+# -l --local: files are local, not urls (default: not local)
 
 use CoverArtBot;
 use LWP::Simple;
@@ -18,7 +19,8 @@ my $max = 2;
 my $tmpdir = "/tmp/";
 my $password = '';
 my $remove_note = "cover added to cover art archive";
-GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note);
+my $local = 0;
+GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'local|l' => \$local);
 
 my $file = shift @ARGV or die "Must provide a filename";
 my $username = shift @ARGV or die "Must provide a username";
@@ -27,8 +29,8 @@ my @mbids = ();
 open FILE, $file or die "Couldn't open the data file ($file)";
 while (<FILE>) {
 	chomp;
-	my ($mbid, $url, $rel) = split /\t/;
-	push @mbids, { 'mbid' => $mbid, 'url' => $url, 'rel' => $rel };
+	my ($mbid, $url, $rel, $types, $comment) = split /\t/;
+	push @mbids, { 'mbid' => $mbid, 'url' => $url, 'rel' => $rel, 'types' => $types, 'comment' => $comment };
 }
 close FILE;
 
@@ -45,13 +47,13 @@ my $bot = CoverArtBot->new({username => $username, password => $password, note =
 for my $l (@mbids) {
 	last unless $max > 0;
 
-	my $filename = fetch_image($l->{'url'});
+	my $filename = $local ? $l->{'url'} : fetch_image($l->{'url'});
 	if (!$filename) {
 		print "Failed to fetch $l->{$url}.\n";
 		next;
 	}
 
-	my $rv = $bot->run($l->{'mbid'}, $filename, $l->{'rel'});
+	my $rv = $bot->run($l, $filename);
 	$max--;
 }
 
