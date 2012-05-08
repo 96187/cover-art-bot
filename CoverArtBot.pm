@@ -15,7 +15,9 @@ sub new {
 		'useragent' => 'cover art bot/0.1',
 		'note' => $args->{note},
 		'remove_note' => $args->{remove_note},
-		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1)
+		'verbose' => $args->{verbose},
+		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1),
+		'releases' => ()
 	);
 	bless \%hash => $package;
 }
@@ -29,25 +31,24 @@ sub run {
 	$self->{'types'} = $l->{'types'} || "Front";
 	$self->{'comment'} = $l->{'comment'};
 
-	print $self->{'mbid'},"\n";
-	print $self->{'filename'},"\n";
-	print $self->{'rel'},"\n";
-	print $self->{'types'},"\n";
-	print $self->{'comment'},"\n";
+	print "MBID: ".$self->{'mbid'}."\n" if $self->{'verbose'};
+	print "Filename: ".$self->{'filename'}."\n" if $self->{'verbose'};
+	print "Types: ".$self->{'types'}."\n" if $self->{'verbose'};
+	print "Comment: ".$self->{'comment'}."\n" if $self->{'verbose'};
+	print "Relationship ID: ".$self->{'rel'}."\n" if $self->{'verbose'};
 
 	if ($self->cover_exists) {
-		print "Skipping $mbid: Already has cover art.\n";
+		print STDERR "Skipping ".$self->{'mbid'}.": Already has cover art.\n";
 		return 0;
 	}
 
 	if (!$self->add_cover_art) {
-		print "Couldn't add cover art.\n";
+		print STDERR "Couldn't add cover art.\n";
 		return 0;
 	}
 
 	if ($self->{'rel'} && !$self->remove_relationship()) {
-		print $self->{'rel'},"\n";
-		print "Couldn't remove relationship.\n";
+		print STDERR "Couldn't remove relationship ".$self->{'rel'}.".\n";
 		return 0;
 	}
 
@@ -56,10 +57,14 @@ sub run {
 
 sub cover_exists {
 	my ($self) = @_;
+
+	return 0 if $self->{'releases'}->{ $self->{'mbid'} };
+
 	if ($self->load_url("http://coverartarchive.org/release/".$self->{'mbid'})) {
 		return 1;
 	}
-	
+
+	$self->{'releases'}->{ $self->{'mbid'} } = 1;
 	return 0;
 }
 
@@ -77,7 +82,7 @@ sub load_url {
 }
 
 sub remove_relationship {
-	print "Removing relationship ".$self->{'rel'}."\n";
+	print "Removing relationship ".$self->{'rel'}."\n" if $self->{'verbose'};
 	my ($self) = @_;
 	my $mech = $self->{'mech'};
 	my $url = "http://".$self->{'server'}."/edit/relationship/delete?returnto=&type1=url&type0=release&id=".$self->{'rel'};
@@ -95,6 +100,7 @@ sub add_cover_art {
 	if (!$self->{'loggedin'}) {
 		# load login page
 		my $url = "http://".$self->{'server'}."/login";
+		print "Logging in as ".$self->{'username'}." at $url.\n" if $self->{'verbose'};
 		$mech->get($url);
 		sleep 1;
 
@@ -124,28 +130,27 @@ sub add_cover_art {
 		$mech2->field("file", $self->{'filename'});
 		$mech2->submit();
 		if ($mech2->content !~ /parent.document.getElementById/) {
-			print "Error uploading image.\n";
+			print STDERR "Error uploading ".$self->{'filename'}." to ".$self->{'mbid'}.".\n";
 			return 0;
 		}
 	} else {
-		print "Could not find ".$self->{'filename'}."\n";
+		print STDERR "Could not find ".$self->{'filename'}."\n";
 		return 0;
 	}
 
 	sleep 3;
 
-	# submit edit	
+	# submit edit
 	$mech->form_id("add-cover-art");
 	my %types = ( "Front" => 1, "Back" => 2, "Booklet" => 3, "Medium" => 4, "Obi" => 5, "Spine" => 6, "Track" => 7, "Other" => 8 );
-	print $self->{'types'},"\n";
 	if ($self->{'types'} ne "None") {
 		my @types = map { $types{$_} } split /,/, $self->{'types'};
-		print join ",", @types; print "\n";
+		print "Selecting types ", join (",", @types), "\n" if $self->{'verbose'};
 		$mech->select("add-cover-art.type_id", \@types);
 	}
 	if ($self->{'comment'}) {
 		$mech->field("add-cover-art.comment", $self->{'comment'});
-		print "Setting comment ".$self->{'comment'}.".\n";
+		print "Setting comment ".$self->{'comment'}.".\n" if $self->{'verbose'};
 	}
 	# if user is an autoeditor, do not submit this as an autoedit
 	if ($mech->find_all_inputs(type => 'checkbox', name=>'add-cover-art.as_auto_editor')) {
@@ -154,7 +159,7 @@ sub add_cover_art {
 	$mech->field("add-cover-art.edit_note", $self->{'note'});
 	$mech->submit();
 
-	print $mech->uri, "\n";
+	print $mech->uri, "\n" if $self->{'verbose'};
 	return $mech->uri;
 }
 
