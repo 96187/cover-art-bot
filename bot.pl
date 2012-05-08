@@ -3,22 +3,22 @@
 # 'datafile' is a tab-separated file. See the README for more information
 # 'username' is the MusicBrainz username to use (will prompt for password)
 # Options:
-# -n --note: edit note to use (default 'from existing cover art relationship')
+# -n --note: edit note to use
 # -m --max: how many (max) pieces to upload in a given run (default: 2)
 # -t --tmpdir: a temporary directory (default: "/tmp/")
 # -p --password: password (if not provided, will prompt)
-# -r --remove-note: edit note to use when removing a relationship (default 'cover added to cover art archive')
+# -r --remove-note: edit note to use when removing a relationship
 # -v --verbose: be chatty (default: not very talkative)
 
 use CoverArtBot;
 use LWP::Simple;
 use Getopt::Long;
 
-my $note = "from existing cover art relationship";
+my $note = "";
 my $max = 2;
 my $tmpdir = "/tmp/";
 my $password = '';
-my $remove_note = "cover added to cover art archive";
+my $remove_note = "";
 my $verbose = 0;
 GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose);
 

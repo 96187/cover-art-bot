@@ -1,5 +1,7 @@
 This is a little bot for adding things to the [Cover Art Archive](http://coverartarchive.org) from arbitrary URLs. You'll need a username and password from [MusicBrainz](http://musicbrainz.org) to use it, since that's how edits on the cover art archive happen.
 
+Depends on LWP::Simple, Getopt::Long and WWW::Mechanize.
+
 Run it using: perl bot.pl [options] datafile username
 
 "username" is your username on musicbrainz.org.
@@ -12,11 +14,11 @@ Comment (optional)
 Relationship ID (l_release_url.id) if you want to delete a relationship (optional)
 
 Options:
--n --note: edit note to use (default 'from existing cover art relationship')
+-n --note: edit note to use
 -m --max: how many (max) pieces to upload in a given run (default: 2)
 -t --tmpdir: a temporary directory (default: "/tmp/")
 -p --password: password (if not provided, will prompt)
--r --remove-note: edit note to use when removing a relationship (default 'cover added to cover art archive')
+-r --remove-note: edit note to use when removing a relationship
 -v --verbose: be chatty (default: not very talkative)
 
 Right now it will only upload images if there isn't any cover art already. This may or may not ever get fixed.

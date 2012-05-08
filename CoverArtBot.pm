@@ -13,8 +13,8 @@ sub new {
 		'username' => $args->{username},
 		'password' => $args->{password},
 		'useragent' => 'cover art bot/0.1',
-		'note' => $args->{note},
-		'remove_note' => $args->{remove_note},
+		'note' => $args->{note} || "",
+		'remove_note' => $args->{remove_note} || "",
 		'verbose' => $args->{verbose},
 		'mech' => WWW::Mechanize->new(agent => $self->{'useragent'}, autocheck => 1),
 		'releases' => ()
