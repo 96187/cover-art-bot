@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # perl bot.pl [options] datafile username
-# 'datafile' should be tab-separated mbid-url pairs. If you want to remove old relationships too, add a third column with l_release_url.id
+# 'datafile' is a tab-separated file. See the README for more information
 # 'username' is the MusicBrainz username to use (will prompt for password)
 # Options:
 # -n --note: edit note to use (default 'from existing cover art relationship')
