@@ -10,6 +10,9 @@
 # -r --remove-note: edit note to use when removing a relationship
 # -v --verbose: be chatty (default: not very talkative)
 
+use FindBin;
+use lib "$FindBin::Bin";
+
 use CoverArtBot;
 use LWP::Simple;
 use Getopt::Long;
