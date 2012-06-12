@@ -22,25 +22,43 @@ sub new {
 	bless \%hash => $package;
 }
 
-sub run {
-	my ($self, $l, $filename) = @_;
+sub precheck {
+	my ($self, $l) = @_;
 
 	$self->{'mbid'} = $l->{'mbid'};
-	$self->{'filename'} = $filename;
 	$self->{'rel'} = $l->{'rel'};
 	$self->{'types'} = $l->{'types'} || "Front";
 	$self->{'comment'} = $l->{'comment'};
 
+	return 1 if $self->{'precheck'}->{ $self->{'mbid'} };
+
 	print "MBID: ".$self->{'mbid'}."\n" if $self->{'verbose'};
-	print "Filename: ".$self->{'filename'}."\n" if $self->{'verbose'};
 	print "Types: ".$self->{'types'}."\n" if $self->{'verbose'};
 	print "Comment: ".$self->{'comment'}."\n" if $self->{'verbose'};
 	print "Relationship ID: ".$self->{'rel'}."\n" if $self->{'verbose'};
 
 	if ($self->cover_exists) {
 		print STDERR "Skipping ".$self->{'mbid'}.": Already has cover art.\n";
+		my $mbid = $self->{'mbid'};
 		return 0;
 	}
+
+	$self->{'precheck'}->{ $self->{'mbid'} } = 1;
+
+	return 1;
+}
+
+sub run {
+	my ($self, $l, $filename) = @_;
+
+	if (!$self->precheck($l)) {
+		return 0;
+	}
+
+	$self->{'filename'} = $filename;
+	print "Filename: ".$self->{'filename'}."\n" if $self->{'verbose'};
+
+	print "pre-checking complete, uploading...\n" if $self->{'verbose'};
 
 	if (!$self->add_cover_art) {
 		print STDERR "Couldn't add cover art.\n";
