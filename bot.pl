@@ -53,14 +53,22 @@ for my $l (@mbids) {
 		last;
 	}
 
-	my $filename = -e $l->{'url'} ? $l->{'url'} : fetch_image($l->{'url'});
-	if (!$filename) {
-		print STDERR "Failed to fetch $l->{$url}.\n";
-		next;
+	my $precheck_ok = $bot->precheck($l);
+
+	if ($precheck_ok) {
+		my $filename = -e $l->{'url'} ? $l->{'url'} : fetch_image($l->{'url'}, $l->{'mbid'});
+		if (!$filename) {
+			my $urlname = $l->{'url'};
+			print STDERR "Failed to fetch $urlname.\n";
+			next;
+		}
+
+		my $rv = $bot->run($l, $filename);
+		
+		$max -= $rv;
 	}
 
-	my $rv = $bot->run($l, $filename);
-	$max--;
+	print "$max more image(s)...\n\n";
 }
 
 sub fetch_image {
