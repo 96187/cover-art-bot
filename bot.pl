@@ -1,14 +1,6 @@
 #!/usr/bin/perl
 # perl bot.pl [options] datafile username
-# 'datafile' is a tab-separated file. See the README for more information
-# 'username' is the MusicBrainz username to use (will prompt for password)
-# Options:
-# -n --note: edit note to use
-# -m --max: how many (max) pieces to upload in a given run (default: 2)
-# -t --tmpdir: a temporary directory (default: "/tmp/")
-# -p --password: password (if not provided, will prompt)
-# -r --remove-note: edit note to use when removing a relationship
-# -v --verbose: be chatty (default: not very talkative)
+# See the README for more information
 
 use FindBin;
 use lib "$FindBin::Bin";
@@ -18,7 +10,7 @@ use LWP::Simple;
 use Getopt::Long;
 
 my $note = "";
-my $max = 2;
+my $max = 100;
 my $tmpdir = "/tmp/";
 my $password = '';
 my $remove_note = "";

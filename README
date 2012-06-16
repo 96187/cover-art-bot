@@ -15,7 +15,7 @@ Relationship ID (l_release_url.id) if you want to delete a relationship (optiona
 
 Options:
 -n --note: edit note to use
--m --max: how many (max) pieces to upload in a given run (default: 2)
+-m --max: how many (max) pieces to upload in a given run (default: 100)
 -t --tmpdir: a temporary directory (default: "/tmp/")
 -p --password: password (if not provided, will prompt)
 -r --remove-note: edit note to use when removing a relationship

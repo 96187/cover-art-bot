@@ -156,7 +156,7 @@ sub add_cover_art {
 		return 0;
 	}
 
-	sleep 3;
+	sleep 1;
 
 	# submit edit
 	$mech->form_id("add-cover-art");
