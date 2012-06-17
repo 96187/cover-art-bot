@@ -3,6 +3,7 @@
 package CoverArtBot;
 use utf8;
 use WWW::Mechanize;
+use Text::sprintfn;
 
 sub new {
 	my ($package, $args) = @_;
@@ -30,6 +31,7 @@ sub precheck {
 	$self->{'rel'} = $l->{'rel'};
 	$self->{'types'} = $l->{'types'} || "Front";
 	$self->{'comment'} = $l->{'comment'};
+	$self->{'note_args'} = $l->{'note_args'};
 
 	return 1 if $self->{'precheck'}->{ $self->{'mbid'} };
 
@@ -108,7 +110,9 @@ sub remove_relationship {
 	my ($self) = @_;
 	my $mech = $self->{'mech'};
 	my $url = "http://".$self->{'server'}."/edit/relationship/delete?returnto=&type1=url&type0=release&id=".$self->{'rel'};
-	my $r = $mech->post($url, {'confirm.edit_note' => $self->{'remove_note'}});
+	my $note = sprintfn($self->{'remove_note'}, $self->{'note_args'});
+	print "Relationship Removal Edit Note: ".$note."\n" if $self->{'verbose'};
+	my $r = $mech->post($url, {'confirm.edit_note' => $note});
 	if ($r->is_success) {
 		return 1;
 	}
@@ -178,7 +182,9 @@ sub add_cover_art {
 	if ($mech->find_all_inputs(type => 'checkbox', name=>'add-cover-art.as_auto_editor')) {
 		$mech->untick("add-cover-art.as_auto_editor", "1");
 	}
-	$mech->field("add-cover-art.edit_note", $self->{'note'});
+	my $note = sprintfn($self->{'note'}, $self->{'note_args'});
+	print "Edit Note: ".$note."\n" if $self->{'verbose'};
+	$mech->field("add-cover-art.edit_note", $note);
 	$mech->submit();
 
 	print $mech->uri, "\n" if $self->{'verbose'};
