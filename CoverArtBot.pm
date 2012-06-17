@@ -12,6 +12,7 @@ sub new {
 		'server' => 'musicbrainz.org',
 		'username' => $args->{username},
 		'password' => $args->{password},
+		'use_front' => $args->{use_front} || 0,
 		'useragent' => 'cover art bot/0.1',
 		'note' => $args->{note} || "",
 		'remove_note' => $args->{remove_note} || "",
@@ -78,7 +79,10 @@ sub cover_exists {
 
 	return 0 if $self->{'releases'}->{ $self->{'mbid'} };
 
-	if ($self->load_url("http://coverartarchive.org/release/".$self->{'mbid'})) {
+	my $url = "http://coverartarchive.org/release/" . $self->{'mbid'};
+	my $url = $url . "/front" if $self->{'use_front'};
+
+	if ($self->load_url($url)) {
 		return 1;
 	}
 
