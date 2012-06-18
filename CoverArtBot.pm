@@ -9,7 +9,7 @@ sub new {
 	my %hash;
 	%hash = (
 		FORM => {},
-		'server' => 'musicbrainz.org',
+		'server' => $args->{server} || 'musicbrainz.org',
 		'username' => $args->{username},
 		'password' => $args->{password},
 		'useragent' => 'cover art bot/0.1',
