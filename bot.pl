@@ -15,7 +15,8 @@ my $tmpdir = "/tmp/";
 my $password = '';
 my $remove_note = "";
 my $verbose = 0;
-GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose);
+my $use_front = 0;
+GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose, 'use_front' => \$use_front);
 
 my $file = shift @ARGV or die "Must provide a filename";
 my $username = shift @ARGV or die "Must provide a username";
@@ -37,7 +38,7 @@ if (!$password) {
 	print "\n";
 }
 
-my $bot = CoverArtBot->new({username => $username, password => $password, note => $note, remove_note => $remove_note, verbose => $verbose});
+my $bot = CoverArtBot->new({username => $username, password => $password, note => $note, remove_note => $remove_note, verbose => $verbose, use_front => $use_front});
 
 for my $l (@mbids) {
 	unless ($max > 0) {
