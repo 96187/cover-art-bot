@@ -20,5 +20,6 @@ Options:
 -p --password: password (if not provided, will prompt)
 -r --remove-note: edit note to use when removing a relationship
 -v --verbose: be chatty (default: not very talkative)
+-s --server: change the server (default: musicbrainz.org) (note: not very useful unless you've set up a CAA mirror, since test doesn't work)
 
 Right now it will only upload images if there isn't any cover art already. This may or may not ever get fixed.
