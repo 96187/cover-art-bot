@@ -20,6 +20,6 @@ Options:
 -p --password: password (if not provided, will prompt)
 -r --remove-note: edit note to use when removing a relationship
 -v --verbose: be chatty (default: not very talkative)
-   --use_front: use the front instead of the index to determine cover art presence
+   --use-front: use the front instead of the index to determine cover art presence
 
 Right now it will only upload images if there isn't any cover art already. This may or may not ever get fixed.
