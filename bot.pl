@@ -16,7 +16,7 @@ my $password = '';
 my $remove_note = "";
 my $verbose = 0;
 my $use_front = 0;
-GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose, 'use_front|f' => \$use_front);
+GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose, 'use_front' => \$use_front);
 
 my $file = shift @ARGV or die "Must provide a filename";
 my $username = shift @ARGV or die "Must provide a username";
