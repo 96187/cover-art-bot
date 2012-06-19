@@ -80,7 +80,7 @@ sub cover_exists {
 	return 0 if $self->{'releases'}->{ $self->{'mbid'} };
 
 	my $url = "http://coverartarchive.org/release/" . $self->{'mbid'};
-	my $url = $url . "/front" if $self->{'use_front'};
+	$url .= "/front" if $self->{'use_front'};
 
 	if ($self->load_url($url)) {
 		return 1;
