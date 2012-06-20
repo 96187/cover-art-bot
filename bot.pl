@@ -71,6 +71,7 @@ for my $l (@mbids) {
 			}
 			$l->{'note_args'}->{'x_dim'} = $xdim;
 			$l->{'note_args'}->{'y_dim'} = $ydim;
+			$l->{'note_args'}->{'identify_output'} = $info;
 		}
 
 		my $rv = $bot->run($l, $filename);

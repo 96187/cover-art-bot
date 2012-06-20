@@ -20,6 +20,7 @@ Options:
                local: set to 'local' for a local file, 'remote' otherwise
                url: URL or filename, from data file
                x_dim, y_dim: x and y dimensions (only if identify, from imagemagick, is installed)
+               identify_output: full output of identify (if imagemagick is installed) 
 -m --max: how many (max) pieces to upload in a given run (default: 100)
 -t --tmpdir: a temporary directory (default: "/tmp/")
 -p --password: password (if not provided, will prompt)
