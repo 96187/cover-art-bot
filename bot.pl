@@ -50,7 +50,7 @@ for my $l (@mbids) {
 		last;
 	}
 	
-	$l->{'note_args'} = {url => $l->{'url'}, mbid => $l->{'mbid'}};
+	$l->{'note_args'} = {url => $l->{'url'}, mbid => $l->{'mbid'}, local => -e $l->{'url'} ? "local" : "remote"};
 
 	my $precheck_ok = $bot->precheck($l);
 
