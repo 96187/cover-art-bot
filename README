@@ -1,6 +1,6 @@
 This is a little bot for adding things to the Cover Art Archive (http://coverartarchive.org) from local files or arbitrary URLs. You'll need a username and password from MusicBrainz (http://musicbrainz.org) to use it, since that's how edits on the cover art archive happen.
 
-Depends on LWP::Simple, Getopt::Long and WWW::Mechanize.
+Depends on LWP::Simple, Getopt::Long, File::Which, Text::Template, and WWW::Mechanize.
 
 Run it using: perl bot.pl [options] datafile username
 
@@ -14,7 +14,13 @@ Comment (optional)
 Relationship ID (l_release_url.id) if you want to delete a relationship (optional)
 
 Options:
--n --note: edit note to use
+-n --note: edit note to use; this can be a format string following Text::Template formatting
+           available fields:
+               mbid: release MBID, from data file
+               local: set to 'local' for a local file, 'remote' otherwise
+               url: URL or filename, from data file
+               x_dim, y_dim: x and y dimensions (only if identify, from imagemagick, is installed)
+               identify_output: full output of identify (if imagemagick is installed) 
 -m --max: how many (max) pieces to upload in a given run (default: 100)
 -t --tmpdir: a temporary directory (default: "/tmp/")
 -p --password: password (if not provided, will prompt)

@@ -8,6 +8,7 @@ use lib "$FindBin::Bin";
 use CoverArtBot;
 use LWP::Simple;
 use Getopt::Long;
+use File::Which;
 
 my $note = "";
 my $max = 100;
@@ -40,11 +41,16 @@ if (!$password) {
 
 my $bot = CoverArtBot->new({username => $username, password => $password, note => $note, remove_note => $remove_note, verbose => $verbose, use_front => $use_front});
 
+my $identify_exe = which('identify');
+warn "identify can't be found, install imagemagick for type checking and dimensions in notes" unless $identify_exe;
+
 for my $l (@mbids) {
 	unless ($max > 0) {
 		print "Reached maximum number of files.\n";
 		last;
 	}
+	
+	$l->{'note_args'} = {url => $l->{'url'}, mbid => $l->{'mbid'}, local => -e $l->{'url'} ? "local" : "remote"};
 
 	my $precheck_ok = $bot->precheck($l);
 
@@ -54,6 +60,18 @@ for my $l (@mbids) {
 			my $urlname = $l->{'url'};
 			print STDERR "Failed to fetch $urlname.\n";
 			next;
+		}
+
+		if ($identify_exe) {
+			my $info = `$identify_exe $filename`;
+			my ($xdim, $ydim) = $info =~ / JPEG ([0-9]+)x([0-9]+) /;
+			if (!$xdim || !$ydim) {
+				print STDERR "Image is not a JPEG, or dimensions can't be found.\n";
+				next;
+			}
+			$l->{'note_args'}->{'x_dim'} = $xdim;
+			$l->{'note_args'}->{'y_dim'} = $ydim;
+			$l->{'note_args'}->{'identify_output'} = $info;
 		}
 
 		my $rv = $bot->run($l, $filename);
