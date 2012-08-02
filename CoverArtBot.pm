@@ -168,7 +168,7 @@ sub add_cover_art {
 
 	# submit edit
 	$mech->form_id("add-cover-art");
-	my %types = ( "Front" => 1, "Back" => 2, "Booklet" => 3, "Medium" => 4, "Obi" => 5, "Spine" => 6, "Track" => 7, "Other" => 8 );
+	my %types = ( "Front" => 1, "Back" => 2, "Booklet" => 3, "Medium" => 4, "Obi" => 5, "Spine" => 6, "Track" => 7, "Other" => 8, "Tray" => 9, "Sticker" => 10 );
 	if ($self->{'types'} ne "None") {
 		my @types = map { $types{$_} } split /,/, $self->{'types'};
 		print "Selecting types ", join (",", @types), "\n" if $self->{'verbose'};
