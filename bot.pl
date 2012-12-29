@@ -43,6 +43,7 @@ my $bot = CoverArtBot->new({username => $username, password => $password, note =
 
 my $identify_exe = which('identify');
 warn "identify can't be found, install imagemagick for type checking and dimensions in notes" unless $identify_exe;
+my $jpegtran_exe = which('jpegtran');
 
 for my $l (@mbids) {
 	unless ($max > 0) {
@@ -72,6 +73,11 @@ for my $l (@mbids) {
 			$l->{'note_args'}->{'x_dim'} = $xdim;
 			$l->{'note_args'}->{'y_dim'} = $ydim;
 			$l->{'note_args'}->{'identify_output'} = $info;
+		}
+
+		if ($jpegtran_exe) {
+			print STDERR "Optimizing with jpegtran...\n";
+			`$jpegtran_exe -copy none -optimize -outfile $filename $filename`;
 		}
 
 		my $rv = $bot->run($l, $filename);
