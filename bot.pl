@@ -17,7 +17,8 @@ my $password = '';
 my $remove_note = "";
 my $verbose = 0;
 my $use_front = 0;
-GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose, 'use-front' => \$use_front);
+my $optimize = 0;
+GetOptions('note|n=s' => \$note, 'max|m=i' => \$max, 'tmpdir|t=s' => \$tmpdir, 'password|p=s' => \$password, 'remove-note|r=s' => \$remove_note, 'verbose|v' => \$verbose, 'use-front' => \$use_front, 'optimize' => \$optimize);
 
 my $file = shift @ARGV or die "Must provide a filename";
 my $username = shift @ARGV or die "Must provide a username";
@@ -44,6 +45,9 @@ my $bot = CoverArtBot->new({username => $username, password => $password, note =
 my $identify_exe = which('identify');
 warn "identify can't be found, install imagemagick for type checking and dimensions in notes" unless $identify_exe;
 my $jpegtran_exe = which('jpegtran');
+if ($optimize && !$jpegtran_exe) {
+    warn "jpegtran can't be found, install jpegtran for lossless image optimization";
+}
 
 for my $l (@mbids) {
 	unless ($max > 0) {
@@ -75,7 +79,7 @@ for my $l (@mbids) {
 			$l->{'note_args'}->{'identify_output'} = $info;
 		}
 
-		if ($jpegtran_exe) {
+		if ($jpegtran_exe && $optimize) {
 			print STDERR "Optimizing with jpegtran...\n";
 			`$jpegtran_exe -copy none -optimize -outfile $filename $filename`;
 		}
