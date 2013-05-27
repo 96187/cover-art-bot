@@ -63,8 +63,8 @@ for my $l (@mbids) {
 		}
 
 		if ($identify_exe) {
-			my $info = `$identify_exe $filename`;
-			my ($xdim, $ydim) = $info =~ / JPEG ([0-9]+)x([0-9]+) /;
+			my $info = `$identify_exe "$filename"`;
+			my ($xdim, $ydim) = $info =~ / JPEG ([0-9]+)x([0-9]+)/;
 			if (!$xdim || !$ydim) {
 				print STDERR "Image is not a JPEG, or dimensions can't be found.\n";
 				next;
