@@ -4,6 +4,7 @@ package CoverArtBot;
 use utf8;
 use WWW::Mechanize;
 use Text::Template qw(fill_in_string);
+use JSON;
 
 sub new {
 	my ($package, $args) = @_;
@@ -142,14 +143,24 @@ sub add_cover_art {
 		sleep 1;
 	}
 
+ 
 	# find iframe
 	my $url = "http://".$self->{'server'}."/release/".$self->{'mbid'}."/add-cover-art";
 	$mech->get($url);
-	my $iframe = $mech->find_link(tag => 'iframe');
+	$mech->form_id("add-cover-art");
+	my $image_id = $mech->value("add-cover-art.id");
+
+	my $mech2 = $mech->clone();
+	$mech2->add_header("Accept" => "*/*");
+	my $r = $mech2->get("http://".$self->{'server'}."/ws/js/cover-art-upload/".$self->{'mbid'}."?image_id=$image_id&mime_type=image/jpeg&redirect=true");
+	my $f = decode_json($r->decoded_content);
 
 	# load iframe
-	my $mech2 = $mech->clone();
+	my $iframe = $mech->find_link(tag => 'iframe');
 	$mech2->get( $iframe->url() );
+	for $i (keys %{ $f->{formdata} }) {
+		$mech2->field($i, $f->{formdata}->{$i});
+	}
 
 	# upload image
 	if (-e $self->{'filename'}) {
@@ -167,7 +178,6 @@ sub add_cover_art {
 	sleep 1;
 
 	# submit edit
-	$mech->form_id("add-cover-art");
 	my %types = ( "Front" => 1, "Back" => 2, "Booklet" => 3, "Medium" => 4, "Obi" => 5, "Spine" => 6, "Track" => 7, "Other" => 8, "Tray" => 9, "Sticker" => 10 );
 	if ($self->{'types'} ne "None") {
 		my @types = map { $types{$_} } split /,/, $self->{'types'};

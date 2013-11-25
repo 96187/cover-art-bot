@@ -1,6 +1,6 @@
 This is a little bot for adding things to the Cover Art Archive (http://coverartarchive.org) from local files or arbitrary URLs. You'll need a username and password from MusicBrainz (http://musicbrainz.org) to use it, since that's how edits on the cover art archive happen.
 
-Depends on LWP::Simple, Getopt::Long, File::Which, Text::Template, and WWW::Mechanize.
+Depends on JSON, LWP::Simple, Getopt::Long, File::Which, Text::Template, and WWW::Mechanize.
 
 Run it using: perl bot.pl [options] datafile username
 
