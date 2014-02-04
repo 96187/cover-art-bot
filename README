@@ -27,5 +27,6 @@ Options:
 -r --remove-note: edit note to use when removing a relationship
 -v --verbose: be chatty (default: not very talkative)
    --use-front: use the front instead of the index to determine cover art presence
+   --optimize: losslessly optimize the jpeg with jpegtran (if available) before uploading
 
 Right now it will only upload images if there isn't any cover art already. This may or may not ever get fixed.
